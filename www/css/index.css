@@ -37,6 +37,12 @@ body {
     width:100%;
 }
 
+.current-status-heading{
+  text-align: center;
+  padding: 2%;
+  color: darkgrey;
+}
+
 /* Portrait layout (default) */
 .app {
     background:url(../img/logo.png) no-repeat;/* 170px x 200px */

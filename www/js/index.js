@@ -16,7 +16,7 @@ var app = {
         createChart();
         function onBatteryStatus(status) {
             saveInDatabase(status.level);
-            document.getElementById('Battery').innerHTML = "Battery status: " + status.level + "%";
+            document.getElementById('Battery').innerHTML = status.level + "%";
         }
 
         function saveInDatabase(battery_status) {
@@ -87,7 +87,7 @@ var app = {
 
       while ( i-- ) {
         date = new Date(keys[i]);
-          values.push(date.toLocaleTimeString('en-US'));
+          values.push(date.getHours() + ":" + date.getMinutes());
       }
       return values;
         //return Object.keys(localStorage);
