@@ -10,7 +10,6 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
-        //window.localstorage.clear();
         this.receivedEvent('deviceready');
         window.addEventListener("batterystatus", onBatteryStatus, false);
 
@@ -28,6 +27,7 @@ var app = {
             var key = new Date();
             var storage = window.localStorage;
             storage.setItem(key, battery_status);
+
             updateTable(key, battery_status);
             updateChart(key, battery_status)
         }
@@ -36,6 +36,7 @@ var app = {
             var row = table.insertRow(1);
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
+
             cell1.innerHTML = formatToTime(key);
             cell2.innerHTML = value;
 
@@ -66,7 +67,7 @@ var app = {
               labels: getTimeStamps(),
               datasets:[{
                 label:'Battery Level',
-                data: getValues(),
+                data: getSortedValues(),
                 borderWidth:1,
                 borderColor:'#777',
                 hoverBorderWidth:3,
@@ -104,27 +105,38 @@ var app = {
     }
 
     function getTimeStamps(){
-        var values = [];
+        var sortedTimeStamps = [];
+        keys = getSortedKeys();
+        i = keys.length;
+
+        while ( i-- ) {
+          sortedTimeStamps.push(formatToTime(new Date(keys[i])));
+        }
+        console.log(sortedTimeStamps);
+        return sortedTimeStamps;
+    }
+
+    function getSortedKeys() {
+        var dateValues = [];
         keys = Object.keys(localStorage);
         i = keys.length;
 
         while ( i-- ) {
-          date = new Date(keys[i]);
-            values.push(formatToTime(date));
+          dateValues.push(new Date(keys[i]));
         }
-        return values;
-    }
 
-    function getKeys() {
-        return Object.keys(localStorage);
+        dateValues.sort(function(o1,o2){
+            if (o1 < o2)    return 1;
+            else if(o1 > o2) return  -1;
+            else                      return  0;
+        });
+        return dateValues;
      }
 
-     function getValues() {
+     function getSortedValues() {
          var values = [];
-         keys = Object.keys(localStorage);
+         keys = getSortedKeys();
          i = keys.length;
-
-        console.log(keys);
 
          while ( i-- ) {
              values.push(localStorage.getItem(keys[i]) );
