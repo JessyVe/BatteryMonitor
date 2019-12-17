@@ -10,42 +10,63 @@ var app = {
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
     onDeviceReady: function() {
+        //window.localstorage.clear();
         this.receivedEvent('deviceready');
         window.addEventListener("batterystatus", onBatteryStatus, false);
-        //window.localstorage.clear();
+
+        let table = document.getElementById("last-entries");
+        createTable();
+        let chart;
         createChart();
+
         function onBatteryStatus(status) {
             saveInDatabase(status.level);
             document.getElementById('Battery').innerHTML = status.level + "%";
         }
 
         function saveInDatabase(battery_status) {
-              var key = new Date();
-              var storage = window.localStorage;
-              storage.setItem(key, battery_status) // Pass a key name and its value to add or update that key.
-              //var value = storage.getItem(key); // Pass a key name to get its value.
-              document.getElementById('Database').innerHTML += "<br>New value saved: " + storage.getItem(key);
+            var key = new Date();
+            var storage = window.localStorage;
+            storage.setItem(key, battery_status);
+            updateTable(key, battery_status);
+            updateChart(key, battery_status)
         }
 
-        function updateChart(){
+        function updateTable(key, value){
+            var row = table.insertRow(1);
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = formatToTime(key);
+            cell2.innerHTML = value;
 
+            var rowCount = table.rows.length;
+            if(rowCount > 10) {
+                table.deleteRow(rowCount -1);
+            }
+        }
+
+        function createTable(){
+
+        }
+
+        function updateChart(key, value){
+           chart.data.labels[chart.data.labels.length] = formatToTime(key);
+           chart.data.datasets[0].data[chart.data.labels.length] = value;
+           chart.update();
         }
 
         function createChart(){
-          let myChart = document.getElementById('myChart').getContext('2d');
-          console.log('Create chart');
-          // Global Options
           Chart.defaults.global.defaultFontFamily = 'Lato';
           Chart.defaults.global.defaultFontSize = 11;
           Chart.defaults.global.defaultFontColor = '#777';
 
-          let massPopChart = new Chart(myChart, {
-            type:'line', // bar, horizontalBar, pie, line, doughnut, radar, polarArea
+          chart = new Chart(myChart, {
+            type:'line',
             data:{
-              labels: getKeys(), //['Yesterday', 'Today', 'Tomorrow'],
+              labels: getTimeStamps(),
               datasets:[{
                 label:'Battery Level',
-                data: getValues(), //[80, 45, 93],
+                data: getValues(),
                 borderWidth:1,
                 borderColor:'#777',
                 hoverBorderWidth:3,
@@ -78,18 +99,24 @@ var app = {
           });
         }
 
+    function formatToTime(date){
+       return date.getHours() + ":" + date.getMinutes();
+    }
+
+    function getTimeStamps(){
+        var values = [];
+        keys = Object.keys(localStorage);
+        i = keys.length;
+
+        while ( i-- ) {
+          date = new Date(keys[i]);
+            values.push(formatToTime(date));
+        }
+        return values;
+    }
 
     function getKeys() {
-      var values = [];
-      keys = Object.keys(localStorage);
-      i = keys.length;
-
-      while ( i-- ) {
-        date = new Date(keys[i]);
-          values.push(date.getHours() + ":" + date.getMinutes());
-      }
-      return values;
-        //return Object.keys(localStorage);
+        return Object.keys(localStorage);
      }
 
      function getValues() {
