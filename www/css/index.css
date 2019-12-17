@@ -37,14 +37,20 @@ body {
     width:100%;
 }
 
+h4 {
+  margin-top: 5%;
+}
+
 .current-status-heading{
-  text-align: center;
-  padding: 2%;
+  margin-top: 10%;
   color: darkgrey;
 }
 
+.center-text{
+  text-align: center;
+}
+
 canvas {
-  float: left;
   width: 100%;
 }
 
@@ -53,10 +59,11 @@ canvas {
 }
 
 h1 {
-    font-size:24px;
+    font-size:28px;
     font-weight:bold;
     overflow:visible;
     text-align:center;
+    color: whitesmoke;
 }
 
 .main {
