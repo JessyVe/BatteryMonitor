@@ -43,22 +43,6 @@ body {
   color: darkgrey;
 }
 
-/* Portrait layout (default) */
-.app {
-    background:url(../img/logo.png) no-repeat;/* 170px x 200px */
-    position:fixed;             /* position in the center of the screen */
-    left:10%;
-    top:10%;
-
-    height:10%;                   /* text area height */
-    width:10%;                   /* text area width */
-
-    text-align:center;
-  /*  padding:180px 0px 0px 0px;     /* image height is 200px (bottom 20px are overlapped with text) */
-  /*  margin:-115px 0px 0px -112px;  /* offset vertical: half of image height and text area height */
-                                   /* offset horizontal: half of text area width */
-}
-
 canvas {
   float: left;
   width: 100%;
@@ -103,7 +87,7 @@ h1 {
 .event {
     color:#FFFFFF;
     font-size:9px;
-    width: 100%;
+    width: 96%;
     padding: 2%;
 }
 
