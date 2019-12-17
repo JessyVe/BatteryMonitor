@@ -20,8 +20,7 @@ var app = {
         }
 
         function saveInDatabase(battery_status) {
-              document.getElementById('Log').text += "called"
-                var key = new Date();
+              var key = new Date();
               var storage = window.localStorage;
               storage.setItem(key, battery_status) // Pass a key name and its value to add or update that key.
               //var value = storage.getItem(key); // Pass a key name to get its value.
