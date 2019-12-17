@@ -1,3 +1,4 @@
+// TODO: Check if array has even expected amout of entries!
 
 var app = {
     // Application Constructor
@@ -12,6 +13,9 @@ var app = {
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
         window.addEventListener("batterystatus", onBatteryStatus, false);
+
+        //var storage = window.localStorage;
+        //storage.clear();
 
         let table = document.getElementById("last-entries");
         createTable();
@@ -37,7 +41,7 @@ var app = {
             var cell1 = row.insertCell(0);
             var cell2 = row.insertCell(1);
 
-            cell1.innerHTML = formatToTime(key);
+            cell1.innerHTML = formatToTime(new Date(key));
             cell2.innerHTML = value;
 
             var rowCount = table.rows.length;
@@ -47,13 +51,17 @@ var app = {
         }
 
         function createTable(){
-
+          for (var key in getSortedKeys().slice(Math.max(getSortedKeys().length - 10, 0))) {
+              updateTable(key, getSortedValues(key));
+              console.log("Add into table")
+          }
         }
 
         function updateChart(key, value){
-           chart.data.labels[chart.data.labels.length] = formatToTime(key);
-           chart.data.datasets[0].data[chart.data.labels.length] = value;
-           chart.update();
+           createChart();
+           //chart.data.labels[chart.data.labels.length] = formatToTime(key);
+           //chart.data.datasets[0].data[chart.data.labels.length] = value;
+           //chart.update();
         }
 
         function createChart(){
@@ -64,10 +72,10 @@ var app = {
           chart = new Chart(myChart, {
             type:'line',
             data:{
-              labels: getTimeStamps(),
+              labels: getTimeStamps().slice(Math.max(getTimeStamps().length - 5, 0)),
               datasets:[{
                 label:'Battery Level',
-                data: getSortedValues(),
+                data: getSortedValues().slice(Math.max(getTimeStamps().length - 5, 0)),
                 borderWidth:1,
                 borderColor:'#777',
                 hoverBorderWidth:3,
@@ -107,9 +115,9 @@ var app = {
     function getTimeStamps(){
         var sortedTimeStamps = [];
         keys = getSortedKeys();
-        i = keys.length;
+        i = 0;
 
-        while ( i-- ) {
+        while ( i++ < keys.length ) {
           sortedTimeStamps.push(formatToTime(new Date(keys[i])));
         }
         console.log(sortedTimeStamps);
@@ -126,8 +134,8 @@ var app = {
         }
 
         dateValues.sort(function(o1,o2){
-            if (o1 < o2)    return 1;
-            else if(o1 > o2) return  -1;
+            if (o1 < o2)    return -1;
+            else if(o1 > o2) return  1;
             else                      return  0;
         });
         return dateValues;
