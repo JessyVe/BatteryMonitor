@@ -1,21 +1,13 @@
-// TODO: Check if array has even expected amout of entries!
-
 var app = {
     // Application Constructor
     initialize: function() {
         document.addEventListener('deviceready', this.onDeviceReady.bind(this), false);
     },
 
-    // deviceready Event Handler
-    //
-    // Bind any cordova events here. Common events are:
-    // 'pause', 'resume', etc.
-
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
 
         let storage = window.localStorage;
-       // storage.clear();
 
         let table = document.getElementById("last-entries");
         createTable();
@@ -42,7 +34,8 @@ var app = {
             let cell1 = row.insertCell(0);
             let cell2 = row.insertCell(1);
 
-            cell1.innerHTML = formatToTime(new Date(key));
+            d = new Date(key);
+            cell1.innerHTML = d.toLocaleDateString() + " " + d.toLocaleTimeString();
             cell2.innerHTML = value;
 
             console.log("Inserted into table");
@@ -66,9 +59,6 @@ var app = {
 
         function updateChart(key, value){
            createChart();
-           //chart.data.labels[chart.data.labels.length] = formatToTime(key);
-           //chart.data.datasets[0].data[chart.data.labels.length] = value;
-           //chart.update();
         }
 
         function createChart(){
@@ -139,7 +129,7 @@ var app = {
 
     function formatToTime(dateString){
       let d = new Date(dateString);
-      return d.getHours() + ":" + d.getMinutes();
+      return d.toLocaleTimeString();
     }
 
     function getTimeStamps(){
@@ -154,7 +144,7 @@ var app = {
              sortedTimeStamps.push(formatedTimestamp);
           }
         }
-        return sortedTimeStamps;//.slice(Math.max(sortedTimeStamps.length - 10, 0));
+        return sortedTimeStamps;
     }
 
      function getSortedValues() {
