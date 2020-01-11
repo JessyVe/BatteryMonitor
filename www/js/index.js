@@ -10,17 +10,20 @@ var app = {
     //
     // Bind any cordova events here. Common events are:
     // 'pause', 'resume', etc.
+
     onDeviceReady: function() {
         this.receivedEvent('deviceready');
-        window.addEventListener("batterystatus", onBatteryStatus, false);
 
-        //var storage = window.localStorage;
-        //storage.clear();
+        let storage = window.localStorage;
+       // storage.clear();
 
         let table = document.getElementById("last-entries");
         createTable();
         let chart;
         createChart();
+
+        window.addEventListener("batterystatus", onBatteryStatus, false);
+
 
         function onBatteryStatus(status) {
             saveInDatabase(status.level);
@@ -29,31 +32,35 @@ var app = {
 
         function saveInDatabase(battery_status) {
             var key = new Date();
-            var storage = window.localStorage;
             storage.setItem(key, battery_status);
-
             updateTable(key, battery_status);
             updateChart(key, battery_status)
         }
 
         function updateTable(key, value){
-            var row = table.insertRow(1);
-            var cell1 = row.insertCell(0);
-            var cell2 = row.insertCell(1);
+            let row = table.insertRow(1);
+            let cell1 = row.insertCell(0);
+            let cell2 = row.insertCell(1);
 
             cell1.innerHTML = formatToTime(new Date(key));
             cell2.innerHTML = value;
 
-            var rowCount = table.rows.length;
+            console.log("Inserted into table");
+            console.log(cell1.innerHTML + " " + cell2.innerHTML);
+
+            let rowCount = table.rows.length;
             if(rowCount > 10) {
                 table.deleteRow(rowCount -1);
             }
         }
 
         function createTable(){
-          for (var key in getSortedKeys().slice(Math.max(getSortedKeys().length - 10, 0))) {
-              updateTable(key, getSortedValues(key));
-              console.log("Add into table")
+          let keys = getSortedKeys();
+          console.log("createTable");
+          console.log(keys);
+          i = 0
+          while( i++ < keys.length) {
+              updateTable(keys[i], storage.getItem(keys[i]));
           }
         }
 
@@ -65,6 +72,7 @@ var app = {
         }
 
         function createChart(){
+          console.log("Creating chart.")
           Chart.defaults.global.defaultFontFamily = 'Lato';
           Chart.defaults.global.defaultFontSize = 11;
           Chart.defaults.global.defaultFontColor = '#777';
@@ -72,10 +80,10 @@ var app = {
           chart = new Chart(myChart, {
             type:'line',
             data:{
-              labels: getTimeStamps().slice(Math.max(getTimeStamps().length - 5, 0)),
+              labels: getTimeStamps(),
               datasets:[{
                 label:'Battery Level',
-                data: getSortedValues().slice(Math.max(getTimeStamps().length - 5, 0)),
+                data: getSortedValues(),
                 borderWidth:1,
                 borderColor:'#777',
                 hoverBorderWidth:3,
@@ -108,46 +116,54 @@ var app = {
           });
         }
 
-    function formatToTime(date){
-       return date.getHours() + ":" + date.getMinutes();
+   function getSortedKeys() {
+      var dateValues = [];
+      keys = Object.keys(storage);
+      i = keys.length;
+
+      while ( i-- ) {
+        dateValues.push(new Date(keys[i]));
+      }
+
+     dateValues.sort(function(o1,o2){
+          if (o1 < o2)    return -1;
+          else if(o1 > o2) return  1;
+          else                      return  0;
+      });
+
+      if(dateValues.length > 10){
+        dateValues = dateValues.slice(Math.max(dateValues.length - 10, 0));
+      }
+      return dateValues;
+    }
+
+    function formatToTime(dateString){
+      let d = new Date(dateString);
+      return d.getHours() + ":" + d.getMinutes();
     }
 
     function getTimeStamps(){
-        var sortedTimeStamps = [];
+        let sortedTimeStamps = [];
         keys = getSortedKeys();
-        i = 0;
 
+        i = 0;
         while ( i++ < keys.length ) {
-          sortedTimeStamps.push(formatToTime(new Date(keys[i])));
+           formatedTimestamp = formatToTime(new Date(keys[i]));
+
+           if(!formatedTimestamp.toUpperCase().includes("NAN")) {
+             sortedTimeStamps.push(formatedTimestamp);
+          }
         }
-        console.log(sortedTimeStamps);
-        return sortedTimeStamps;
+        return sortedTimeStamps;//.slice(Math.max(sortedTimeStamps.length - 10, 0));
     }
 
-    function getSortedKeys() {
-        var dateValues = [];
-        keys = Object.keys(localStorage);
-        i = keys.length;
-
-        while ( i-- ) {
-          dateValues.push(new Date(keys[i]));
-        }
-
-        dateValues.sort(function(o1,o2){
-            if (o1 < o2)    return -1;
-            else if(o1 > o2) return  1;
-            else                      return  0;
-        });
-        return dateValues;
-     }
-
      function getSortedValues() {
-         var values = [];
-         keys = getSortedKeys();
-         i = keys.length;
+         let values = [];
+         let keys = getSortedKeys();
 
-         while ( i-- ) {
-             values.push(localStorage.getItem(keys[i]) );
+         i = 0;
+         while ( i++ < keys.length ) {
+           values.push(storage.getItem(keys[i]));
          }
          return values;
        }
